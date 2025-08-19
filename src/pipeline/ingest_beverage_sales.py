@@ -5,17 +5,17 @@ import os
 from dotenv import load_dotenv
 import re
 
-# Load environment variables
+
 load_dotenv()
 BEVERAGE_INPUT_FILE_PATH = os.getenv("BEVERAGE_INPUT_FILE_PATH")
 OUTPUT_PATH = "files/output/beverage_sales/landing"
 
-# Create a single SparkSession instance
+
 spark = SparkSession.builder \
     .appName("BeverageSalesPipeline") \
     .getOrCreate()
 
-# Define schema for beverage sales
+
 def get_beverage_sales_schema():
     return StructType([
         StructField("DATE", StringType(), True),
@@ -33,11 +33,11 @@ def get_beverage_sales_schema():
         StructField("PERIOD", StringType(), True)
     ])
 
-# Ingest and clean beverage sales data
 def ingest_beverage_sales():
     schema = get_beverage_sales_schema()
     df = spark.read.option("header", True).option("sep", "\t").schema(schema).csv(BEVERAGE_INPUT_FILE_PATH)
-    # Fix BOM in DATE column if present
+
+    # Found special characters in DATE column, getting rid of them
     for c in df.columns:
         if "DATE" in c and c != "DATE":
             df = df.withColumnRenamed(c, "DATE")
@@ -46,27 +46,18 @@ def ingest_beverage_sales():
     return df
 
 def convert_date_column(df, date_col="DATE"):
-    """
-    Convert the date column to yyyy-MM-dd format.
-    """
     return df.withColumn(date_col, to_date(col(date_col), "M/d/yyyy"))
 
 def rename_columns_snake_case(df):
-    """
-    Rename columns: remove special characters, convert to lower case, and use snake_case.
-    """
     def to_snake_case(s):
-        s = re.sub(r'[^A-Za-z0-9 ]+', '', s)  # Remove special characters
-        s = s.replace(' ', '_')               # Replace spaces with underscores
-        s = s.lower()                         # Convert to lower case
+        s = re.sub(r'[^A-Za-z0-9 ]+', '', s)
+        s = s.replace(' ', '_')
+        s = s.lower()
         return s
     new_columns = [to_snake_case(c) for c in df.columns]
     return df.toDF(*new_columns)
 
 def save_beverage_sales_to_delta(df):
-    """
-    Save the beverage sales DataFrame to a Delta file, appending data and using dynamic partition overwrite mode.
-    """
     spark.conf.set("spark.sql.sources.partitionOverwriteMode", "dynamic")
     df.write.mode("append").partitionBy("DATE").parquet(OUTPUT_PATH)
     print("Saved beverage sales to Parquet format partitioned by DATE.")
