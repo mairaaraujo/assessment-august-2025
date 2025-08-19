@@ -12,7 +12,7 @@ OUTPUT_PATH = "files/output/beverage_sales/landing"
 
 
 spark = SparkSession.builder \
-    .appName("BeverageSalesPipeline") \
+    .appName("Landing - BeverageSales") \
     .getOrCreate()
 
 
@@ -57,7 +57,7 @@ def rename_columns_snake_case(df):
     new_columns = [to_snake_case(c) for c in df.columns]
     return df.toDF(*new_columns)
 
-def save_beverage_sales_to_delta(df):
+def save_beverage_sales_to_landing(df):
     spark.conf.set("spark.sql.sources.partitionOverwriteMode", "dynamic")
     df.write.mode("append").partitionBy("DATE").parquet(OUTPUT_PATH)
     print("Saved beverage sales to Parquet format partitioned by DATE.")
@@ -67,6 +67,6 @@ if __name__ == "__main__":
     df_beverage_sales = ingest_beverage_sales()
     df_beverage_sales = convert_date_column(df_beverage_sales, "DATE")
     df_beverage_sales = rename_columns_snake_case(df_beverage_sales)
-    save_beverage_sales_to_delta(df_beverage_sales)
+    save_beverage_sales_to_landing(df_beverage_sales)
 
     spark.stop()
