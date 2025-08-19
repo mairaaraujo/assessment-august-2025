@@ -76,6 +76,6 @@ if __name__ == "__main__":
     df_beverage_sales = ingest_beverage_sales()
     df_beverage_sales = convert_date_column(df_beverage_sales, "DATE")
     df_beverage_sales = rename_columns_snake_case(df_beverage_sales)
-    save_beverage_sales_to_delta(df_beverage_sales, OUTPUT_PATH)
+    save_beverage_sales_to_delta(df_beverage_sales)
 
     spark.stop()
