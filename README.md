@@ -5,7 +5,7 @@ Este repositório implementa um pipeline de dados para ingestão, transformaçã
 ## Estrutura
 - **src/pipeline/**: Scripts para ingestão, limpeza, transformação e modelagem dos dados.
 - **files/input/**: Dados brutos (CSV).
-- **files/output/**: Dados processados (Parquet), organizados por camadas (landing, silver, etc).
+- **files/output/**: Dados processados (Parquet), organizados por camadas
 - **notebooks/**: Notebooks para exploração e validação dos dados.
 
 ## Modelagem
