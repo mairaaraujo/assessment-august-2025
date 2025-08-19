@@ -8,7 +8,7 @@ import re
 # Load environment variables
 load_dotenv()
 BEVERAGE_INPUT_FILE_PATH = os.getenv("BEVERAGE_INPUT_FILE_PATH")
-OUTPUT_PATH = "files/output/beverage_sales"
+OUTPUT_PATH = "files/output/beverage_sales/landing"
 
 # Create a single SparkSession instance
 spark = SparkSession.builder \
@@ -49,7 +49,7 @@ def convert_date_column(df, date_col="DATE"):
     """
     Convert the date column to yyyy-MM-dd format.
     """
-    return df.withColumn(date_col, to_date(col(date_col), "d/M/yyyy"))
+    return df.withColumn(date_col, to_date(col(date_col), "M/d/yyyy"))
 
 def rename_columns_snake_case(df):
     """
@@ -68,7 +68,7 @@ def save_beverage_sales_to_delta(df):
     Save the beverage sales DataFrame to a Delta file, appending data and using dynamic partition overwrite mode.
     """
     spark.conf.set("spark.sql.sources.partitionOverwriteMode", "dynamic")
-    df.write.format("parquet").mode("append").partitionBy("DATE").save(OUTPUT_PATH)
+    df.write.mode("append").partitionBy("DATE").parquet(OUTPUT_PATH)
     print("Saved beverage sales to Parquet format partitioned by DATE.")
 
 
