@@ -7,8 +7,8 @@ from pyspark.sql.types import StructType, StructField, StringType
 
 def load_file_paths():
     load_dotenv()
-    channel_group_file_path = os.getenv("CHANNEL_GROUP_FILE_PATH")
-    beverage_file_path = os.getenv("BEVERAGE_FILE_PATH")
+    channel_group_file_path = os.getenv("CHANNEL_GROUP_INPUT_FILE_PATH", "files/input/abi_bus_case1_beverage_channel_group_20210726.csv")
+    beverage_file_path = os.getenv("BEVERAGE_INPUT_FILE_PATH", "files/input/abi_bus_case1_beverage_sales_20210726.csv")
     return channel_group_file_path, beverage_file_path
 
 CHANNEL_GROUP_FILE_PATH, BEVERAGE_FILE_PATH = load_file_paths()

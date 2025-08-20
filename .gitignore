@@ -1,4 +1,9 @@
 .DS_Store
 __pycache__/
 artifacts/
+/metastore_db
+*.pyc
 .env
+spark-warehouse/
+lake/
+*.parquet
